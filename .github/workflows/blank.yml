@@ -75,7 +75,7 @@ jobs:
           echo "切换到分支: $BRANCH_NAME"
           
           # 克隆仓库
-          git clone ${{ github.event.client_payload.git_url }} ./${{  github.event.client_payload.project_name }}
+          git clone ${{ github.event.client_payload.gitaddress }} ./${{  github.event.client_payload.project_name }}
           
           # 进入项目目录并切换分支
           cd ./${{  github.event.client_payload.project_name }}
