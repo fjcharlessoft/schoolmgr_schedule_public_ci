@@ -257,7 +257,7 @@ jobs:
           echo "========================"
 
 
-          bash ${WORK_ROOT_DIR}/myutils/schoolmgr/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
 
 
         working-directory: ./${{ github.event.client_payload.project_name }}
