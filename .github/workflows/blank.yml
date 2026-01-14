@@ -85,7 +85,10 @@ jobs:
           
           # 切换到指定分支（如果分支不存在会自动创建并跟踪远程分支）
           git checkout -B $BRANCH_NAME origin/$BRANCH_NAME || git checkout $BRANCH_NAME
-          
+
+          # 初始化并更新子模块
+          git submodule init
+          git submodule update
           # 返回上级目录
           cd ..
           
