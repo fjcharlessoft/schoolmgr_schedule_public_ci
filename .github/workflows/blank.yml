@@ -243,11 +243,11 @@ jobs:
           # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env guanlan || CheckLastResult
 
           # # 部署 英才
-          echo "yingcai==="
-          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          # #echo "yingcai==="
+          # # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
           
-          # 部署angent
-          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env yingcai || CheckLastResult
+          # # 部署angent
+          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env yingcai || CheckLastResult
           
           
           # 部署angent
