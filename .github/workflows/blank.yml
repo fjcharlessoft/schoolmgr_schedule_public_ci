@@ -222,18 +222,18 @@ jobs:
           pnpm config get registry
 
           # #==============
-          # # 编译
+          # 编译
 
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
           
           
-          # # 编译agent
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          # 编译agent
+          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
           
-          # # 发布
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          # 发布
+          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
           
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
           
           
           # # 部署
