@@ -164,216 +164,29 @@ jobs:
 
 
 
-      - name: Install dding on non-Windows
-        if: runner.os != 'Windows'
-        run: |
-          pip install dding
-          mkdir -p ~/.dding
-          dding_secret="${{ github.event.client_payload.secret || env.DEFAULT_DDING_SECRET }}"
-          dding_token="${{ github.event.client_payload.token || env.DEFAULT_DDING_TOKEN }}"
-          cat <<EOF > ~/.dding/config.json
-          [
-              {
-                  "group": "default",
-                  "secret": "$dding_secret",
-                  "token": "$dding_token"
-              }
-          ]
-          EOF
-          
-      - name: Get current branch name
-        id: get_branch
-        run: |
-          echo "BRANCH=${{ github.event.client_payload.mybranch }}" >> $GITHUB_ENV
-          echo "UTILS_DIR=${PWD}/${{ github.event.client_payload.project_name }}/myutils" >> $GITHUB_ENV
-          echo "WORK_ROOT_DIR=${PWD}/${{  github.event.client_payload.project_name }}" >> $GITHUB_ENV
-          echo "==========="
-          echo $(git rev-parse --abbrev-ref HEAD)
-          echo "==========="
-
-      - name: Generate JENKINS.env
-        run: |
-          echo "export BRANCH=$BRANCH " >> $WORK_ROOT_DIR/.JENKINS.env
-          echo "export UTILS_DIR=$UTILS_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
-          echo "export WORK_ROOT_DIR=$WORK_ROOT_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
-          cat $WORK_ROOT_DIR/.JENKINS.env
-        working-directory: ./${{ github.event.client_payload.project_name }}
-
-  #     - name: Generate git commit
+  #     - name: Install dding on non-Windows
+  #       if: runner.os != 'Windows'
   #       run: |
-  #          bash $WORK_ROOT_DIR/myutils/quickspider/scripts/build_web.sh $WORK_ROOT_DIR/.JENKINS.env
-      # - name: Setup Debug Session
-      #   uses: csexton/debugger-action@master
-
-      - name: Set Go proxy
-        run: echo "GOPROXY=https://proxy.golang.org,direct" >> $GITHUB_ENV
-
-      - name: Build test
-        shell: bash
-        run: |
-          pwd
-          ls
-          echo "========="
-          cd ${UTILS_DIR}
-          source ${UTILS_DIR}/utils.sh
-          cd -
-
+  #         pip install dding
+  #         mkdir -p ~/.dding
+  #         dding_secret="${{ github.event.client_payload.secret || env.DEFAULT_DDING_SECRET }}"
+  #         dding_token="${{ github.event.client_payload.token || env.DEFAULT_DDING_TOKEN }}"
+  #         cat <<EOF > ~/.dding/config.json
+  #         [
+  #             {
+  #                 "group": "default",
+  #                 "secret": "$dding_secret",
+  #                 "token": "$dding_token"
+  #             }
+  #         ]
+  #         EOF
           
-
-          # pnpm config set registry https://registry.npmjs.org
-          # pnpm config get registry
-
-          # # #==============
-          # # 编译
-
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          
-          # # 编译agent
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          # # 发布
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          
-          # # # 部署
-          # # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/guanlan/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          # # # 部署angent
-          # # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env guanlan || CheckLastResult
-
-          # # 部署 英才
-          # # #echo "yingcai==="
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-          
-          # # 部署angent
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env yingcai || CheckLastResult
-          
-          
-          # # 部署angent
-          # #sh ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env sanlong_node || CheckLastResult
-          
-          # #echo ${BRANCH_NAME}
-          # echo "========================"
-
-
-          # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
-
-
-        working-directory: ./${{ github.event.client_payload.project_name }}
-
-
-      # - name: Check Status
-      #   if: ${{ success() }}
-      #   shell: pwsh
-      #   run: |
-      #     $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
-          
-      #     Write-Host "Workflow succeeded for $repoName!"
-      #     dding "github action success :):):) for ./${{ github.event.client_payload.project_name }}"
-          
-
-      # - name: Check Status
-      #   if: ${{ failure() }}
-      #   shell: pwsh
-      #   run: |
-      #     $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
-      #     Write-Host "Workflow failed for $repoName!"
-      #     dding "github action fail!!! :( ./${{ github.event.client_payload.project_name }}"
-
-  dingding-error:
-    runs-on: ubuntu-latest
-    needs: [frontend]
-    if: ${{ failure() }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Send dingding notify error
-        uses: zcong1993/actions-ding@master
-        with:
-          dingToken: ${{ github.event.client_payload.token }} #钉钉token
-          secret: ${{ github.event.client_payload.secret }}
-          body: |
-            {
-              "msgtype": "text",
-              "text": {
-                  "content": 'status:[打叉][打叉][打叉]  ${{  github.event.client_payload.project_name }} 执行失败\n提交者:  ${{ github.event.client_payload.ext.pusher.username }}\n${{ github.ref_type }}: ${{ github.event.client_payload.mybranch }}\nlog: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-             }
-             }
-            
-
-  dingding-success:
-    runs-on: ubuntu-latest
-    if: ${{ success() }}
-    needs: [frontend]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Send dingding notify success
-        uses: zcong1993/actions-ding@master
-        with:
-          dingToken: ${{ github.event.client_payload.token }} #钉钉token
-          secret: ${{ github.event.client_payload.secret }}
-          body: |
-            {
-             "msgtype": "text",
-             "text": {
-                 "content": 'status:[对勾][对勾][对勾][100分]  ${{ github.event.client_payload.project_name }} 执行成功\n提交者: ${{ github.event.client_payload.ext.pusher.username }}\n${{ github.ref_type }}: ${{ github.event.client_payload.mybranch }}\nlog: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-             }
-             }
-  
-        
-  #     - name: Set SSH
-  #       env:
-  #         KEY: ${{ secrets.SSH_KEY }}
-  #       run: |
-  #         echo $KEY
-  #         mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-  #         ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-  #     # - name: Setup Debug Session
-  #     #   uses: csexton/debugger-action@master
-
-  #     - name: publish web
-  #       run: |
-  #         # echo ${{ env.branch_name }} 
-  #         # echo "export BRANCH=${{ env.branch_name }} " >> .JENKINS.env
-  #         # find . -name "publish_web.sh"
-  #         # echo "================="
-  #         # cat .JENKINS.env
-  #         bash $WORK_ROOT_DIR/myutils/quickspider/scripts/publish_web.sh $WORK_ROOT_DIR/.JENKINS.env
-
-  # backend:
-  #   if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'release' || github.event_name == 'repository_dispatch'
-  #   name: Backend go
-  #   runs-on: macos-latest
-  #   strategy:
-  #     matrix:
-  #       go-version: [1.22]
-  #   steps:
-  #     - name: Set up Go ${{ matrix.go-version }}
-  #       uses: actions/setup-go@v1
-  #       with:
-  #         go-version: ${{ matrix.go-version }}
-  #       id: go
-
-  #     - name: Check out branch
-  #       uses: actions/checkout@v2
-
-
-  #     - name: Clone quickspider-admin
-  #       run: |
-  #         git clone https://oauth2:${{ secrets.MYUSER_TOKEN  }}@github.com/charlessoft/quick-spider-admin.git ./quick-spider-admin
-  #         #git clone https://oauth2:${{ secrets.GITEE_TOKEN  }}@gitee.com/charlesabc/myutils.git ./quick-spider-admin/myutils
-          
-
-
   #     - name: Get current branch name
   #       id: get_branch
   #       run: |
-  #         echo "BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
-  #         echo "UTILS_DIR=${PWD}/quick-spider-admin/myutils" >> $GITHUB_ENV
-  #         echo "WORK_ROOT_DIR=${PWD}/quick-spider-admin" >> $GITHUB_ENV
+  #         echo "BRANCH=${{ github.event.client_payload.mybranch }}" >> $GITHUB_ENV
+  #         echo "UTILS_DIR=${PWD}/${{ github.event.client_payload.project_name }}/myutils" >> $GITHUB_ENV
+  #         echo "WORK_ROOT_DIR=${PWD}/${{  github.event.client_payload.project_name }}" >> $GITHUB_ENV
   #         echo "==========="
   #         echo $(git rev-parse --abbrev-ref HEAD)
   #         echo "==========="
@@ -384,144 +197,331 @@ jobs:
   #         echo "export UTILS_DIR=$UTILS_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
   #         echo "export WORK_ROOT_DIR=$WORK_ROOT_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
   #         cat $WORK_ROOT_DIR/.JENKINS.env
-  #       working-directory: ./quick-spider-admin
+  #       working-directory: ./${{ github.event.client_payload.project_name }}
 
+  # #     - name: Generate git commit
+  # #       run: |
+  # #          bash $WORK_ROOT_DIR/myutils/quickspider/scripts/build_web.sh $WORK_ROOT_DIR/.JENKINS.env
+  #     # - name: Setup Debug Session
+  #     #   uses: csexton/debugger-action@master
 
-  #     - name: Download dependencies
+  #     - name: Set Go proxy
+  #       run: echo "GOPROXY=https://proxy.golang.org,direct" >> $GITHUB_ENV
+
+  #     - name: Build test
+  #       shell: bash
   #       run: |
-  #         make build-server-local
-  #       working-directory: ./quick-spider-admin
+  #         pwd
+  #         ls
+  #         echo "========="
+  #         cd ${UTILS_DIR}
+  #         source ${UTILS_DIR}/utils.sh
+  #         cd -
 
-  #     # - name: Download dependencies
-  #     #   run: |
-  #     #     go get -v -t -d ./...
-  #     #     if [ -f Gopkg.toml ]; then
-  #     #         curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-  #     #         dep ensure
-  #     #     fi
-  #     #   working-directory: ./quick-spider-admin/server
-
-  #     # - name: Test and Build
-  #     #   run: |
-  #     #     go build -v -race
-  #     #     make 
-  #     #     mv server quickspiderserver && tar zcvf quickspiderserver.tar.gz quickspiderserver ./config.yaml ./resource 
-  #     #   working-directory: ./quick-spider-admin/
-
-
-
-
-  #     - name: Set SSH
-  #       env:
-  #         KEY: ${{ secrets.SSH_KEY }}
-  #       run: |
-  #         echo $KEY
-  #         mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-  #         ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-
-
-
-
-
-  #     - name: publish server
-  #       run: |
-  #         bash ./quick-spider-admin/myutils/quickspider/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env
-
-
-
-  # deploy:
-  #     if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'release'  || github.event_name == 'repository_dispatch'
-  #     name:  deploy
-  #     runs-on: ubuntu-latest
-  #     needs:
-  #       - init
-  #       - backend
-  #       - frontend
-  #     steps:
-  #       - name: Check out branch
-  #         uses: actions/checkout@v2
-  
-  #       - name: Clone quickspider-admin
-  #         run: |
-  #           git clone https://oauth2:${{ secrets.MYUSER_TOKEN  }}@github.com/charlessoft/quick-spider-admin.git ./quick-spider-admin
-  #           #git clone https://oauth2:${{ secrets.GITEE_TOKEN  }}@gitee.com/charlesabc/myutils.git ./quick-spider-admin/myutils
-  
-  
-  #       - name: Install dding on non-Windows
-  #         if: runner.os != 'Windows'
-  #         run: |
-  #           pip install dding
-  #           mkdir -p ~/.dding
-  #           dding_secret="${{ github.event.client_payload.dding_secret || env.DEFAULT_DDING_SECRET }}"
-  #           dding_token="${{ github.event.client_payload.dding_token || env.DEFAULT_DDING_TOKEN }}"
-  #           cat <<EOF > ~/.dding/config.json
-  #           [
-  #               {
-  #                   "group": "default",
-  #                   "secret": "$dding_secret",
-  #                   "token": "$dding_token"
-  #               }
-  #           ]
-  #           EOF
-  
-  
-  #       - name: Get current branch name
-  #         id: get_branch
-  #         run: |
-  #           echo "BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
-  #           echo "UTILS_DIR=${PWD}/quick-spider-admin/myutils" >> $GITHUB_ENV
-  #           echo "WORK_ROOT_DIR=${PWD}/quick-spider-admin" >> $GITHUB_ENV
-  #           echo "==========="
-  #           echo $(git rev-parse --abbrev-ref HEAD)
-  #           echo "==========="
-  
-  #       - name: Generate JENKINS.env
-  #         run: |
-  #           echo "export BRANCH=$BRANCH " >> $WORK_ROOT_DIR/.JENKINS.env
-  #           echo "export UTILS_DIR=$UTILS_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
-  #           echo "export WORK_ROOT_DIR=$WORK_ROOT_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
-  #           cat $WORK_ROOT_DIR/.JENKINS.env
-  #         working-directory: ./quick-spider-admin
-  
-  
-  #       - name: Set SSH
-  #         env:
-  #           KEY: ${{ secrets.SSH_KEY }}
-  #           # HOST: ${{ secrets.HOST }}
-  #           # USER: ${{ secrets.USER }}
-  #           # PROT: ${{ secrets.PROT }}
-  #           # MKDIRTEST: ${{ secrets.MKDIRTEST }}
-  #         run: |
-  #           echo $KEY
-  #           mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
-  #           ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-
-  #       # - name: Setup Debug Session
-  #       #   uses: csexton/debugger-action@master
           
-  #       - name: Deploy 
-  #         run: |
-  #           echo "ok"
-  #           bash $WORK_ROOT_DIR/myutils/quickspider/scripts/quickspider/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env
+
+  #         # pnpm config set registry https://registry.npmjs.org
+  #         # pnpm config get registry
+
+  #         # # #==============
+  #         # # 编译
+
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+          
+  #         # # 编译agent
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/build_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+  #         # # 发布
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/publish_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+          
+  #         # # # 部署
+  #         # # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/guanlan/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+  #         # # # 部署angent
+  #         # # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env guanlan || CheckLastResult
+
+  #         # # 部署 英才
+  #         # # #echo "yingcai==="
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          
+  #         # # 部署angent
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env yingcai || CheckLastResult
+          
+          
+  #         # # 部署angent
+  #         # #sh ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env sanlong_node || CheckLastResult
+          
+  #         # #echo ${BRANCH_NAME}
+  #         # echo "========================"
 
 
+  #         # bash ${WORK_ROOT_DIR}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
 
-  #       - name: Check Status
-  #         if: ${{ success() }}
-  #         shell: pwsh
-  #         run: |
-  #           $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
+
+  #       working-directory: ./${{ github.event.client_payload.project_name }}
+
+
+  #     # - name: Check Status
+  #     #   if: ${{ success() }}
+  #     #   shell: pwsh
+  #     #   run: |
+  #     #     $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
+          
+  #     #     Write-Host "Workflow succeeded for $repoName!"
+  #     #     dding "github action success :):):) for ./${{ github.event.client_payload.project_name }}"
+          
+
+  #     # - name: Check Status
+  #     #   if: ${{ failure() }}
+  #     #   shell: pwsh
+  #     #   run: |
+  #     #     $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
+  #     #     Write-Host "Workflow failed for $repoName!"
+  #     #     dding "github action fail!!! :( ./${{ github.event.client_payload.project_name }}"
+
+  # dingding-error:
+  #   runs-on: ubuntu-latest
+  #   needs: [frontend]
+  #   if: ${{ failure() }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Send dingding notify error
+  #       uses: zcong1993/actions-ding@master
+  #       with:
+  #         dingToken: ${{ github.event.client_payload.token }} #钉钉token
+  #         secret: ${{ github.event.client_payload.secret }}
+  #         body: |
+  #           {
+  #             "msgtype": "text",
+  #             "text": {
+  #                 "content": 'status:[打叉][打叉][打叉]  ${{  github.event.client_payload.project_name }} 执行失败\n提交者:  ${{ github.event.client_payload.ext.pusher.username }}\n${{ github.ref_type }}: ${{ github.event.client_payload.mybranch }}\nlog: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+  #            }
+  #            }
             
-  #           Write-Host "Workflow succeeded for $repoName!"
-  #           dding "github action success :) for quickspider"
+
+  # dingding-success:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ success() }}
+  #   needs: [frontend]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Send dingding notify success
+  #       uses: zcong1993/actions-ding@master
+  #       with:
+  #         dingToken: ${{ github.event.client_payload.token }} #钉钉token
+  #         secret: ${{ github.event.client_payload.secret }}
+  #         body: |
+  #           {
+  #            "msgtype": "text",
+  #            "text": {
+  #                "content": 'status:[对勾][对勾][对勾][100分]  ${{ github.event.client_payload.project_name }} 执行成功\n提交者: ${{ github.event.client_payload.ext.pusher.username }}\n${{ github.ref_type }}: ${{ github.event.client_payload.mybranch }}\nlog: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+  #            }
+  #            }
+  
+        
+  # #     - name: Set SSH
+  # #       env:
+  # #         KEY: ${{ secrets.SSH_KEY }}
+  # #       run: |
+  # #         echo $KEY
+  # #         mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+  # #         ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+  # #     # - name: Setup Debug Session
+  # #     #   uses: csexton/debugger-action@master
+
+  # #     - name: publish web
+  # #       run: |
+  # #         # echo ${{ env.branch_name }} 
+  # #         # echo "export BRANCH=${{ env.branch_name }} " >> .JENKINS.env
+  # #         # find . -name "publish_web.sh"
+  # #         # echo "================="
+  # #         # cat .JENKINS.env
+  # #         bash $WORK_ROOT_DIR/myutils/quickspider/scripts/publish_web.sh $WORK_ROOT_DIR/.JENKINS.env
+
+  # # backend:
+  # #   if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'release' || github.event_name == 'repository_dispatch'
+  # #   name: Backend go
+  # #   runs-on: macos-latest
+  # #   strategy:
+  # #     matrix:
+  # #       go-version: [1.22]
+  # #   steps:
+  # #     - name: Set up Go ${{ matrix.go-version }}
+  # #       uses: actions/setup-go@v1
+  # #       with:
+  # #         go-version: ${{ matrix.go-version }}
+  # #       id: go
+
+  # #     - name: Check out branch
+  # #       uses: actions/checkout@v2
+
+
+  # #     - name: Clone quickspider-admin
+  # #       run: |
+  # #         git clone https://oauth2:${{ secrets.MYUSER_TOKEN  }}@github.com/charlessoft/quick-spider-admin.git ./quick-spider-admin
+  # #         #git clone https://oauth2:${{ secrets.GITEE_TOKEN  }}@gitee.com/charlesabc/myutils.git ./quick-spider-admin/myutils
           
 
-  #       - name: Check Status
-  #         if: ${{ failure() }}
-  #         shell: pwsh
-  #         run: |
-  #           $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
-  #           Write-Host "Workflow failed for $repoName!"
-  #           dding "github action fail :( quickspider"
+
+  # #     - name: Get current branch name
+  # #       id: get_branch
+  # #       run: |
+  # #         echo "BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+  # #         echo "UTILS_DIR=${PWD}/quick-spider-admin/myutils" >> $GITHUB_ENV
+  # #         echo "WORK_ROOT_DIR=${PWD}/quick-spider-admin" >> $GITHUB_ENV
+  # #         echo "==========="
+  # #         echo $(git rev-parse --abbrev-ref HEAD)
+  # #         echo "==========="
+
+  # #     - name: Generate JENKINS.env
+  # #       run: |
+  # #         echo "export BRANCH=$BRANCH " >> $WORK_ROOT_DIR/.JENKINS.env
+  # #         echo "export UTILS_DIR=$UTILS_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
+  # #         echo "export WORK_ROOT_DIR=$WORK_ROOT_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
+  # #         cat $WORK_ROOT_DIR/.JENKINS.env
+  # #       working-directory: ./quick-spider-admin
+
+
+  # #     - name: Download dependencies
+  # #       run: |
+  # #         make build-server-local
+  # #       working-directory: ./quick-spider-admin
+
+  # #     # - name: Download dependencies
+  # #     #   run: |
+  # #     #     go get -v -t -d ./...
+  # #     #     if [ -f Gopkg.toml ]; then
+  # #     #         curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  # #     #         dep ensure
+  # #     #     fi
+  # #     #   working-directory: ./quick-spider-admin/server
+
+  # #     # - name: Test and Build
+  # #     #   run: |
+  # #     #     go build -v -race
+  # #     #     make 
+  # #     #     mv server quickspiderserver && tar zcvf quickspiderserver.tar.gz quickspiderserver ./config.yaml ./resource 
+  # #     #   working-directory: ./quick-spider-admin/
+
+
+
+
+  # #     - name: Set SSH
+  # #       env:
+  # #         KEY: ${{ secrets.SSH_KEY }}
+  # #       run: |
+  # #         echo $KEY
+  # #         mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+  # #         ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+
+
+
+
+
+  # #     - name: publish server
+  # #       run: |
+  # #         bash ./quick-spider-admin/myutils/quickspider/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env
+
+
+
+  # # deploy:
+  # #     if: github.event_name == 'push' || github.event_name == 'pull_request' || github.event_name == 'release'  || github.event_name == 'repository_dispatch'
+  # #     name:  deploy
+  # #     runs-on: ubuntu-latest
+  # #     needs:
+  # #       - init
+  # #       - backend
+  # #       - frontend
+  # #     steps:
+  # #       - name: Check out branch
+  # #         uses: actions/checkout@v2
+  
+  # #       - name: Clone quickspider-admin
+  # #         run: |
+  # #           git clone https://oauth2:${{ secrets.MYUSER_TOKEN  }}@github.com/charlessoft/quick-spider-admin.git ./quick-spider-admin
+  # #           #git clone https://oauth2:${{ secrets.GITEE_TOKEN  }}@gitee.com/charlesabc/myutils.git ./quick-spider-admin/myutils
+  
+  
+  # #       - name: Install dding on non-Windows
+  # #         if: runner.os != 'Windows'
+  # #         run: |
+  # #           pip install dding
+  # #           mkdir -p ~/.dding
+  # #           dding_secret="${{ github.event.client_payload.dding_secret || env.DEFAULT_DDING_SECRET }}"
+  # #           dding_token="${{ github.event.client_payload.dding_token || env.DEFAULT_DDING_TOKEN }}"
+  # #           cat <<EOF > ~/.dding/config.json
+  # #           [
+  # #               {
+  # #                   "group": "default",
+  # #                   "secret": "$dding_secret",
+  # #                   "token": "$dding_token"
+  # #               }
+  # #           ]
+  # #           EOF
+  
+  
+  # #       - name: Get current branch name
+  # #         id: get_branch
+  # #         run: |
+  # #           echo "BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+  # #           echo "UTILS_DIR=${PWD}/quick-spider-admin/myutils" >> $GITHUB_ENV
+  # #           echo "WORK_ROOT_DIR=${PWD}/quick-spider-admin" >> $GITHUB_ENV
+  # #           echo "==========="
+  # #           echo $(git rev-parse --abbrev-ref HEAD)
+  # #           echo "==========="
+  
+  # #       - name: Generate JENKINS.env
+  # #         run: |
+  # #           echo "export BRANCH=$BRANCH " >> $WORK_ROOT_DIR/.JENKINS.env
+  # #           echo "export UTILS_DIR=$UTILS_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
+  # #           echo "export WORK_ROOT_DIR=$WORK_ROOT_DIR" >> $WORK_ROOT_DIR/.JENKINS.env
+  # #           cat $WORK_ROOT_DIR/.JENKINS.env
+  # #         working-directory: ./quick-spider-admin
+  
+  
+  # #       - name: Set SSH
+  # #         env:
+  # #           KEY: ${{ secrets.SSH_KEY }}
+  # #           # HOST: ${{ secrets.HOST }}
+  # #           # USER: ${{ secrets.USER }}
+  # #           # PROT: ${{ secrets.PROT }}
+  # #           # MKDIRTEST: ${{ secrets.MKDIRTEST }}
+  # #         run: |
+  # #           echo $KEY
+  # #           mkdir -p ~/.ssh/ && echo "$KEY" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+  # #           ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+
+  # #       # - name: Setup Debug Session
+  # #       #   uses: csexton/debugger-action@master
+          
+  # #       - name: Deploy 
+  # #         run: |
+  # #           echo "ok"
+  # #           bash $WORK_ROOT_DIR/myutils/quickspider/scripts/quickspider/docker_deploy.sh $WORK_ROOT_DIR/.JENKINS.env
+
+
+
+  # #       - name: Check Status
+  # #         if: ${{ success() }}
+  # #         shell: pwsh
+  # #         run: |
+  # #           $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
+            
+  # #           Write-Host "Workflow succeeded for $repoName!"
+  # #           dding "github action success :) for quickspider"
+          
+
+  # #       - name: Check Status
+  # #         if: ${{ failure() }}
+  # #         shell: pwsh
+  # #         run: |
+  # #           $repoName = $env:GITHUB_REPOSITORY.Split('/')[-1]
+  # #           Write-Host "Workflow failed for $repoName!"
+  # #           dding "github action fail :( quickspider"
