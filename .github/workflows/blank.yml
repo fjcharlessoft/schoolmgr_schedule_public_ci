@@ -143,9 +143,9 @@ jobs:
           source utils.sh
           popd 
 
-          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/build_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/build_server.sh ${JENKINS_ENV_PATH} || CheckLastResult
           # 编译agent
-          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/build_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/build_agent.sh ${JENKINS_ENV_PATH} || CheckLastResult
                     
 
       #     pnpm config set registry https://registry.npmjs.org
@@ -174,9 +174,9 @@ jobs:
           source utils.sh
           popd 
           
-          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_server.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_server.sh ${JENKINS_ENV_PATH} || CheckLastResult
           
-          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_agent.sh $WORK_ROOT_DIR/.JENKINS.env || CheckLastResult
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_agent.sh ${JENKINS_ENV_PATH} || CheckLastResult
       
 
 
