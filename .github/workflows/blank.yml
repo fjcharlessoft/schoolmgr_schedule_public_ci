@@ -4,7 +4,7 @@ name: schoolmgr_schedule
 on:
   repository_dispatch:
     types:
-      - schoolmgr_schedule
+      - schoolmgr_schedule_public_ci
   push:
     branches: [ '*' ]
   pull_request:
