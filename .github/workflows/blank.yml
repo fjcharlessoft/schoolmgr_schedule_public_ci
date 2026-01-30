@@ -246,15 +246,15 @@ jobs:
           ]
           EOF
           
-      - name: Get current branch name
-        id: get_branch1
-        run: |
-          echo "BRANCH=${{ github.event.client_payload.mybranch }}" >> $GITHUB_ENV
-          echo "UTILS_DIR=${PWD}/${{ github.event.client_payload.project_name }}/myutils" >> $GITHUB_ENV
-          echo "WORK_ROOT_DIR=${PWD}/${{  github.event.client_payload.project_name }}" >> $GITHUB_ENV
-          echo "==========="
-          echo $(git rev-parse --abbrev-ref HEAD)
-          echo "==========="
+      # - name: Get current branch name
+      #   id: get_branch1
+      #   run: |
+      #     echo "BRANCH=${{ github.event.client_payload.mybranch }}" >> $GITHUB_ENV
+      #     echo "UTILS_DIR=${PWD}/${{ github.event.client_payload.project_name }}/myutils" >> $GITHUB_ENV
+      #     echo "WORK_ROOT_DIR=${PWD}/${{  github.event.client_payload.project_name }}" >> $GITHUB_ENV
+      #     echo "==========="
+      #     echo $(git rev-parse --abbrev-ref HEAD)
+      #     echo "==========="
 
       - name: Generate JENKINS.env
         run: |
