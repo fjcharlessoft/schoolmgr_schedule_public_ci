@@ -513,6 +513,7 @@ jobs:
           # bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/develop/deploy_web.sh ${JENKINS_ENV_PATH} || CheckLastResult
           # bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/guanlan/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/maixiao/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
 
   dingding-error:
     runs-on: ubuntu-latest
