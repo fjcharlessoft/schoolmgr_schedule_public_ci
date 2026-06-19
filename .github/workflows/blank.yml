@@ -218,8 +218,9 @@ jobs:
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_server.sh ${JENKINS_ENV_PATH} || CheckLastResult
           
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_agent.sh ${JENKINS_ENV_PATH} || CheckLastResult
-      
-
+          
+          # 英才
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh $WORK_ROOT_DIR/.JENKINS.env yingcai || CheckLastResult
 
 
 
