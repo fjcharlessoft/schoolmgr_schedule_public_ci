@@ -219,8 +219,7 @@ jobs:
           
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/publish_agent.sh ${JENKINS_ENV_PATH} || CheckLastResult
           
-          # 英才
-          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh ${JENKINS_ENV_PATH} yingcai || CheckLastResult
+      
 
 
 
@@ -515,6 +514,9 @@ jobs:
           # bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/guanlan/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/maixiao/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
           bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/yingcai/docker_deploy.sh  ${JENKINS_ENV_PATH} || CheckLastResult
+
+          # 英才
+          bash ${WORKSPACE}/myutils/schoolmgr_schedule/scripts/generate_deploy_agent.sh ${JENKINS_ENV_PATH} yingcai || CheckLastResult
 
   dingding-error:
     runs-on: ubuntu-latest
